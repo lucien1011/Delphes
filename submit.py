@@ -17,7 +17,7 @@ n_file = len(input_file_list)
 for ijob in range(0,n_file,n_file_per_job):
     start_index = ijob
     if start_index + n_file_per_job > n_file - 1:
-        end_index = n_file - 1
+        rnd_index = n_file - 1
     else:
         end_index = start_index + n_file_per_job 
     each_job_name = job_name+"_"+str(start_index)+"-"+str(end_index)
