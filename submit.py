@@ -3,11 +3,21 @@ import os,glob
 from SLURMWorker.SLURMWorker import SLURMWorker
 
 # ______________________________________________________________________ ||
-input_file_pattern  = "/cmsuf/data/store/user/klo/ALP_HToZaTo2l2g/GEN-SIM/ALP_HToZaTo2l2g_M1/94X_mc2017_2020May/200510_211100/000*/*.root"
-job_name            = "2020-06-02_ALP_HToZaTo2l2g_M1_13TeV"
+#input_file_pattern  = "/cmsuf/data/store/user/klo/ALP_HToZaTo2l2g/GEN-SIM/ALP_HToZaTo2l2g_M1/94X_mc2017_2020May/200510_211100/000*/*.root"
+#job_name            = "2020-06-02_ALP_HToZaTo2l2g_M1_13TeV"
+#out_dir             = "/cmsuf/data/store/user/t2/users/klo/Delphes/ALP_HToZaTo2l2g_M1/2020-06-02/"
+
+#input_file_pattern  = "/cmsuf/data/store/user/klo/ZJetsToLL_LO_MLM/GEN-SIM/ZJetsToLL_LO_MLM/PUMoriond17-Realistic25ns13TeVEarly2017Collision-93X_mc2017_realistic_v3/200708_140138/000*/*.root"
+#job_name            = "2020-07-09_ZJetsToLL_LO_MLM"
+#out_dir             = "/cmsuf/data/store/user/t2/users/klo/Delphes/ZJetsToLL_LO_MLM/2020-07-09/"
+
+input_file_pattern  = "/cmsuf/data/store/user/klo/WJetsToLNu_LO_MLM/GEN-SIM/WJetsToLNu_LO_MLM/PUMoriond17-Realistic25ns13TeVEarly2017Collision-93X_mc2017_realistic_v3/200713_090204/000*/*.root"
+job_name            = "2020-07-15_WJetsToLNu_LO_MLM"
+out_dir             = "/cmsuf/data/store/user/t2/users/klo/Delphes/WJetsToLNu_LO_MLM/2020-07-15/"
+
+
 n_file_per_job      = 10
 cmssw_dir           = "/ufrc/avery/kinho.lo/Delphes/CMSSW_10_0_5/src/"
-out_dir             = "/cmsuf/data/store/user/t2/users/klo/Delphes/ALP_HToZaTo2l2g_M1/2020-06-02/"
 delphes_dir         = os.getcwd()
 
 # ______________________________________________________________________ ||

@@ -3,10 +3,15 @@ import os,glob
 from SLURMWorker.SLURMWorker import SLURMWorker
 
 # ______________________________________________________________________ ||
-input_file_pattern  = "/cmsuf/data/store/user/t2/users/klo/Delphes/ALP_HToZaTo2l2g_M1/2020-06-02/2020-06-02_ALP_HToZaTo2l2g_M1_13TeV_*.root"
-job_name            = "2020-06-02_MuonTreeProducer"
+#input_file_pattern  = "/cmsuf/data/store/user/t2/users/klo/Delphes/ALP_HToZaTo2l2g_M1/2020-06-02/2020-06-02_ALP_HToZaTo2l2g_M1_13TeV_*.root"
+#job_name            = "2020-06-02_MuonTreeProducer"
+#out_dir             = "/cmsuf/data/store/user/t2/users/klo/Delphes/ALP_HToZaTo2l2g_M1/2020-06-02/MuonTreeProducer/"
+
+input_file_pattern  = "/cmsuf/data/store/user/t2/users/klo/Delphes/ZJetsToLL_LO_MLM/2020-07-09/2020-07-09_ZJetsToLL_LO_MLM_*.root"
+job_name            = "2020-07-09_MuonTreeProducer"
+out_dir             = "/cmsuf/data/store/user/t2/users/klo/Delphes/ZJetsToLL_LO_MLM/2020-07-09/"
+
 cmssw_dir           = "/ufrc/avery/kinho.lo/Delphes/CMSSW_10_0_5/src/"
-out_dir             = "/cmsuf/data/store/user/t2/users/klo/Delphes/ALP_HToZaTo2l2g_M1/2020-06-02/MuonTreeProducer/"
 delphes_dir         = os.getcwd()
 
 # ______________________________________________________________________ ||
