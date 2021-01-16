@@ -63,7 +63,127 @@ float phiL2;
 float phiL3;
 float phiL4;
 int idL1, idL2, idL3, idL4;
+float cosTheta1, cosTheta2, cosThetaStar, Phi, Phi1;
 int nZXCRFailedLeptons;
+
+void computeAngles(TLorentzVector p4M11, int Z1_lept1Id,
+             TLorentzVector p4M12, int Z1_lept2Id,
+             TLorentzVector p4M21, int Z2_lept1Id,
+             TLorentzVector p4M22, int Z2_lept2Id,
+             float & costhetastar, 
+             float & costheta1, 
+             float & costheta2, 
+             float & Phi, 
+             float & Phi1){
+
+    //build Z 4-vectors
+    TLorentzVector p4Z1 = p4M11 + p4M12;
+    TLorentzVector p4Z2 = p4M21 + p4M22;
+    
+    // Sort Z1 leptons so that:
+    if ( (Z1_lept1Id*Z1_lept2Id<0 && Z1_lept1Id<0) || // for OS pairs: lep1 must be the negative one
+         (Z1_lept1Id*Z1_lept2Id>0 && p4M11.Phi()<=p4M12.Phi()) //for SS pairs: use random deterministic convention
+         ) {
+      swap(p4M11, p4M12);
+    }
+    
+    // Same for Z2 leptons
+    if ( (Z2_lept1Id*Z2_lept2Id<0 && Z2_lept1Id<0) ||
+         (Z2_lept1Id*Z2_lept2Id>0 && p4M21.Phi()<=p4M22.Phi()) 
+         ) {
+      swap(p4M21, p4M22);
+    }
+    
+    
+    //build H 4-vectors
+    TLorentzVector p4H = p4Z1 + p4Z2; 
+    
+    // -----------------------------------
+    
+    //// costhetastar
+    TVector3 boostX = -(p4H.BoostVector());
+    TLorentzVector thep4Z1inXFrame( p4Z1 );
+    TLorentzVector thep4Z2inXFrame( p4Z2 );
+    thep4Z1inXFrame.Boost( boostX );
+    thep4Z2inXFrame.Boost( boostX );
+    TVector3 theZ1X_p3 = TVector3( thep4Z1inXFrame.X(), thep4Z1inXFrame.Y(), thep4Z1inXFrame.Z() );
+    TVector3 theZ2X_p3 = TVector3( thep4Z2inXFrame.X(), thep4Z2inXFrame.Y(), thep4Z2inXFrame.Z() );    
+    costhetastar = theZ1X_p3.CosTheta();
+    
+    //// --------------------------- costheta1
+    TVector3 boostV1 = -(p4Z1.BoostVector());
+    TLorentzVector p4M11_BV1( p4M11 );
+    TLorentzVector p4M12_BV1( p4M12 );
+    TLorentzVector p4M21_BV1( p4M21 );
+    TLorentzVector p4M22_BV1( p4M22 );
+    p4M11_BV1.Boost( boostV1 );
+    p4M12_BV1.Boost( boostV1 );
+    p4M21_BV1.Boost( boostV1 );
+    p4M22_BV1.Boost( boostV1 );
+      
+    TLorentzVector p4V2_BV1 = p4M21_BV1 + p4M22_BV1;
+    //// costheta1
+    costheta1 = -p4V2_BV1.Vect().Dot( p4M11_BV1.Vect() )/p4V2_BV1.Vect().Mag()/p4M11_BV1.Vect().Mag();
+    
+    //// --------------------------- costheta2
+    TVector3 boostV2 = -(p4Z2.BoostVector());
+    if (boostV2.Mag()>=1.) {
+      cout << "Warning: Mela::computeAngles: Z2 boost with beta=1, scaling down" << endl;
+      boostV2*=0.9999;
+    }
+    TLorentzVector p4M11_BV2( p4M11 );
+    TLorentzVector p4M12_BV2( p4M12 );
+    TLorentzVector p4M21_BV2( p4M21 );
+    TLorentzVector p4M22_BV2( p4M22 );
+    p4M11_BV2.Boost( boostV2 );
+    p4M12_BV2.Boost( boostV2 );
+    p4M21_BV2.Boost( boostV2 );
+    p4M22_BV2.Boost( boostV2 );
+      
+    TLorentzVector p4V1_BV2 = p4M11_BV2 + p4M12_BV2;
+    //// costheta2
+    costheta2 = -p4V1_BV2.Vect().Dot( p4M21_BV2.Vect() )/p4V1_BV2.Vect().Mag()/p4M21_BV2.Vect().Mag();
+      
+    //// --------------------------- Phi and Phi1 (old phistar1 - azimuthal production angle)
+    //    TVector3 boostX = -(thep4H.BoostVector());
+    TLorentzVector p4M11_BX( p4M11 );
+    TLorentzVector p4M12_BX( p4M12 );
+    TLorentzVector p4M21_BX( p4M21 );
+    TLorentzVector p4M22_BX( p4M22 );
+      
+    p4M11_BX.Boost( boostX );
+    p4M12_BX.Boost( boostX );
+    p4M21_BX.Boost( boostX );
+    p4M22_BX.Boost( boostX );
+      
+    TVector3 tmp1 = p4M11_BX.Vect().Cross( p4M12_BX.Vect() );
+    TVector3 tmp2 = p4M21_BX.Vect().Cross( p4M22_BX.Vect() );    
+      
+    TVector3 normal1_BX( tmp1.X()/tmp1.Mag(), tmp1.Y()/tmp1.Mag(), tmp1.Z()/tmp1.Mag() ); 
+    TVector3 normal2_BX( tmp2.X()/tmp2.Mag(), tmp2.Y()/tmp2.Mag(), tmp2.Z()/tmp2.Mag() ); 
+    
+    //// Phi
+    TLorentzVector p4Z1_BX = p4M11_BX + p4M12_BX;    
+    float tmpSgnPhi = p4Z1_BX.Vect().Dot( normal1_BX.Cross( normal2_BX) );
+    float sgnPhi = tmpSgnPhi/fabs(tmpSgnPhi);
+    Phi = sgnPhi * acos( -1.*normal1_BX.Dot( normal2_BX) );
+      
+      
+    //////////////
+      
+    TVector3 beamAxis(0,0,1);
+    TVector3 tmp3 = (p4M11_BX + p4M12_BX).Vect();
+      
+    TVector3 p3V1_BX( tmp3.X()/tmp3.Mag(), tmp3.Y()/tmp3.Mag(), tmp3.Z()/tmp3.Mag() );
+    TVector3 tmp4 = beamAxis.Cross( p3V1_BX );
+    TVector3 normalSC_BX( tmp4.X()/tmp4.Mag(), tmp4.Y()/tmp4.Mag(), tmp4.Z()/tmp4.Mag() );
+          
+    //// Phi1
+    float tmpSgnPhi1 = p4Z1_BX.Vect().Dot( normal1_BX.Cross( normalSC_BX) );
+    float sgnPhi1 = tmpSgnPhi1/fabs(tmpSgnPhi1);    
+    Phi1 = sgnPhi1 * acos( normal1_BX.Dot( normalSC_BX) );    
+
+}
 
 
 //------------------------------------------------------------------------------
@@ -471,6 +591,7 @@ void AnalyseEvents(ExRootTreeReader* treeReader, TTree* outTree) {
             P4s.push_back(Lep3); P4s.push_back(Lep4);
             tmpIDs.push_back(idL1); tmpIDs.push_back(idL2);
             tmpIDs.push_back(idL3); tmpIDs.push_back(idL4);
+            computeAngles(Lep1,idL1,Lep2,idL2,Lep3,idL3,Lep4,idL4,cosThetaStar,cosTheta1,cosTheta2,Phi,Phi1);
             //lep_Hindex_stdvec->push_back(lep_Hindex[0]);
             //lep_Hindex_stdvec->push_back(lep_Hindex[1]);
             //lep_Hindex_stdvec->push_back(lep_Hindex[2]);
@@ -516,8 +637,35 @@ void InitTree(TTree* outTree)
     outTree->Branch("lep_RelIso",&lep_RelIso);
 
     outTree->Branch("mass4l",&mass4l);
+    outTree->Branch("mass4e",&mass4e);
+    outTree->Branch("mass4mu",&mass4mu);
+    outTree->Branch("mass2e2mu",&mass2e2mu);
     outTree->Branch("massZ1",&massZ1);
     outTree->Branch("massZ2",&massZ2);
+    outTree->Branch("cosTheta1",&cosTheta1);
+    outTree->Branch("cosTheta2",&cosTheta2);
+    outTree->Branch("cosThetaStar",&cosThetaStar);
+    outTree->Branch("Phi",&Phi);
+    outTree->Branch("Phi1",&Phi1);
+    outTree->Branch("pTL1",&pTL1);
+    outTree->Branch("etaL1",&etaL1);
+    outTree->Branch("phiL1",&phiL1);
+    outTree->Branch("idL1",&idL1);
+    outTree->Branch("pTL2",&pTL2);
+    outTree->Branch("etaL2",&etaL2);
+    outTree->Branch("phiL2",&phiL2);
+    outTree->Branch("idL2",&idL2);
+    outTree->Branch("pTL3",&pTL3);
+    outTree->Branch("etaL3",&etaL3);
+    outTree->Branch("phiL3",&phiL3);
+    outTree->Branch("idL3",&idL3);
+    outTree->Branch("pTL4",&pTL4);
+    outTree->Branch("etaL4",&etaL4);
+    outTree->Branch("phiL4",&phiL4);
+    outTree->Branch("idL4",&idL4);
+    outTree->Branch("passedFullSelection",&passedFullSelection);
+    outTree->Branch("passedZXCRSelection",&passedZXCRSelection);
+    outTree->Branch("nZXCRFailedLeptons",&nZXCRFailedLeptons);
 
 }
 
