@@ -585,22 +585,21 @@ void AnalyseEvents(ExRootTreeReader* treeReader, TTree* outTree) {
             phiL2 = Lep2.Phi();
             phiL3 = Lep3.Phi();
             phiL4 = Lep4.Phi();
-            //deltaphiZZ = deltaPhi((Lep1+Lep2).Phi(), (Lep3+Lep4).Phi());
             std::vector<TLorentzVector> P4s; vector<int> tmpIDs;             
             P4s.push_back(Lep1); P4s.push_back(Lep2);
             P4s.push_back(Lep3); P4s.push_back(Lep4);
             tmpIDs.push_back(idL1); tmpIDs.push_back(idL2);
             tmpIDs.push_back(idL3); tmpIDs.push_back(idL4);
             computeAngles(Lep1,idL1,Lep2,idL2,Lep3,idL3,Lep4,idL4,cosThetaStar,cosTheta1,cosTheta2,Phi,Phi1);
-            //lep_Hindex_stdvec->push_back(lep_Hindex[0]);
-            //lep_Hindex_stdvec->push_back(lep_Hindex[1]);
-            //lep_Hindex_stdvec->push_back(lep_Hindex[2]);
-            //lep_Hindex_stdvec->push_back(lep_Hindex[3]);
 
-            TLorentzVector higgs_undec = Lep1+Lep2+Lep3+Lep4;   
-
+            TLorentzVector HVec = Lep1+Lep2+Lep3+Lep4;   
+            TLorentzVector Z1Vec = Lep1+Lep2;   
+            TLorentzVector Z2Vec = Lep3+Lep4;   
+            
             massZ1 = (Lep1+Lep2).M(); massZ2 = (Lep3+Lep4).M(); 
-            mass4l = higgs_undec.M(); 
+            mass4l = HVec.M();
+            pT4l = HVec.Pt(); eta4l = HVec.Eta(); rapidity4l = HVec.Rapidity(); phi4l = HVec.Phi();
+            pTZ1 = Z1Vec.Pt(); pTZ2 = Z2Vec.Pt(); massZ1 = Z1Vec.M(); massZ2 = Z2Vec.M(); 
 
             if (abs(idL1)==11 && abs(idL3)==11) {mass4e=mass4l; mass4mu=-1.0; mass2e2mu=-1.0;}
             else if (abs(idL1)==13 && abs(idL3)==13) {mass4e=-1.0; mass4mu=mass4l; mass2e2mu=-1.0;}
@@ -647,6 +646,17 @@ void InitTree(TTree* outTree)
     outTree->Branch("cosThetaStar",&cosThetaStar);
     outTree->Branch("Phi",&Phi);
     outTree->Branch("Phi1",&Phi1);
+    
+    outTree->Branch("pT4l",&pT4l);
+    outTree->Branch("eta4l",&eta4l);
+    outTree->Branch("phi4l",&phi4l);
+    outTree->Branch("pTZ1",&pTZ1);
+    outTree->Branch("etaZ1",&etaZ1);
+    outTree->Branch("phiZ1",&phiZ1);
+    outTree->Branch("pTZ2",&pTZ2);
+    outTree->Branch("etaZ2",&etaZ2);
+    outTree->Branch("phiZ2",&phiZ2);
+
     outTree->Branch("pTL1",&pTL1);
     outTree->Branch("etaL1",&etaL1);
     outTree->Branch("phiL1",&phiL1);
